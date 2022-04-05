@@ -131,7 +131,7 @@ def create_instance(args):
     vars = [
         "yc", "compute", "instance", "create",
         "--name", args['name'],
-        "--hostname", args['hostname'],
+        "--hostname", args['name'],
         "--network-interface", "subnet-name={network_interface},nat-ip-version=ipv4".format(**args),
         "--zone", args['zone'],
         "--ssh-key", args['ssh_key'],
@@ -173,7 +173,6 @@ def get_instance_info(args):
 def main():
     module_args = dict(
         name=dict(type='str', required=False, default="netology86-instance"),
-        hostname=dict(type='str', required=False, default="netology86-intsance"),
         network_interface=dict(type='str', required=True),
         zone=dict(type='str', required=False, default="ru-central1-a"),
         ssh_key=dict(type='str', required=False, default="~/.ssh/id_rsa.pub"),
