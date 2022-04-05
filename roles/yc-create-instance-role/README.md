@@ -16,8 +16,7 @@ Role Variables
 --------------
 
   - `network_interface`: VPC subnet name to tie the instance to/
-  - `name`: Name of the instance.
-  - `hostname`: Hostname of the instance.
+  - `name`: Name and **hostname** of the instance.
   - `zone`: Data center zone of availability.
   - `ssh_key`: SSH pub key to copy for default user "yc-user". If not set, module will use default ssh pub key ~/.ssh/id_rsa.pub
   - `cores`: Number of compute cores.
