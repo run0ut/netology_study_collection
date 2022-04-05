@@ -75,12 +75,13 @@ class InventoryModule(BaseInventoryPlugin):
 
         for instance in instance_info:
             try:
-                instance['ipv4'] = instance['network_interfaces'][0]['primary_v4_address']['one_to_one_nat']['address']
-                # If instance was created nameless, use it's id insted. YC Web Console uses the same approach
-                if not "name" in instance:
-                    instance['name'] = instance['id']
-                self.inventory.add_host(instance["name"], group="yacloud")
-                self.inventory.set_variable(instance["name"], 'ansible_host', instance['ipv4'])
+                if instance['status'] == "RUNNING":
+                    instance['ipv4'] = instance['network_interfaces'][0]['primary_v4_address']['one_to_one_nat']['address']
+                    # If instance was created nameless, use it's id insted. YC Web Console uses the same approach
+                    if not "name" in instance:
+                        instance['name'] = instance['id']
+                    self.inventory.add_host(instance["name"], group="yacloud")
+                    self.inventory.set_variable(instance["name"], 'ansible_host', instance['ipv4'])
             except:
                 # Don't add instance into inventory, if it doesn't have a publick IP address
                 pass
