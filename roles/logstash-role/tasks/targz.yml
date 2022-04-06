@@ -56,20 +56,20 @@
         mode: 0755
         path: "{{ item }}"
       loop:
-        - "{{ logstash_home}}/config/jvm.options.d"
+        - "{{ logstash_configs }}/jvm.options.d"
 
     - name: Configure JVM options
       become: true
       template:
         src: "jvm.options.j2"
-        dest: "{{ logstash_home}}/config/jvm.options.d/jvm.options"
+        dest: "{{ logstash_configs }}/jvm.options.d/jvm.options"
         mode: 0644
 
     - name: Create Logstash configuration files.
       become: true
       template:
         src: "{{ item }}.j2"
-        dest: "{{ logstash_home}}/config/{{ item }}"
+        dest: "{{ logstash_configs }}/{{ item }}"
         mode: 0644
       with_items:
         - simple_config.conf
