@@ -4,7 +4,7 @@
   include: rpm.yml
 
 - name: Install Filebeat tar.gz (on Docker)
-  when: ( ansible_connection == "community.docker.docker" )
-        or ( ansible_facts.env.container == "podman" )
-        or ( ansible_facts.virtualization_type == "docker" )
+  when: ( ansible_facts.virtualization_type == "docker" )
+        # or ( ansible_facts.env.container == "podman" )
+        # or ( ansible_connection == "community.docker.docker" )
   include: targz.yml

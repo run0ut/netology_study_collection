@@ -1,7 +1,8 @@
 ---
 - name: "Download Filebeat's rpm"
   get_url:
-    url: "https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-{{ filebeat_version }}-x86_64.rpm"
+    # url: "https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-{{ filebeat_version }}-x86_64.rpm"
+    url: "https://ntl.run0ut.ru/cicd/filebeat-{{ filebeat_version }}-x86_64.rpm"
     dest: "/tmp/filebeat-{{ filebeat_version }}-x86_64.rpm"
   register: download_filebeat
   until: download_filebeat is succeeded
@@ -27,6 +28,8 @@
 
 - name: Configure Filebeat
   become: true
+  vars:
+    - filebeat_home: "/usr/share/filebeat"
   template:
     src: filebeat.yml.j2
     dest: /etc/filebeat/filebeat.yml
@@ -55,4 +58,7 @@
   changed_when: false
   until: filebeat_setup is succeeded
   delay: 40
+
+- name: Flush handlers
+  meta: flush_handlers
 
