@@ -2,7 +2,7 @@ galaxy_info:
   author: Sergey Shadurskiy 
   description: Role tests module "my_own_module" for Netology DevOps course
   company: Netology DevOps course
-  role_name: logstash_role
+  role_name: netology86-role
   galaxy_name: netology86-role
   namespace: netology86
 
