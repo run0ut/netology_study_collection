@@ -111,7 +111,7 @@ from ansible.module_utils.basic import AnsibleModule
 import os
 import subprocess
 import json
-
+import time
 
 def create_instance(args):
 
@@ -149,16 +149,58 @@ def create_instance(args):
     #     print(stdout_line)
 
 
+def delete_instance(args):
+
+    # yc compute instance delete --name netology86-instance
+
+    vars = [
+        "yc", "compute", "instance", "delete",
+        "--name", args['name'],
+        "--format=json"
+    ]
+    process = subprocess.Popen(vars,
+                    stdout=subprocess.PIPE,
+                    universal_newlines=True)
+    process.wait()
+    data, err = process.communicate()
+    if process.returncode == 0:
+        return data
+    else:
+        print("Error:", err)
+    return "{}"
+
+
+def start_instance(args):
+
+    # yc compute instance start --name netology86-instance
+
+    vars = [
+        "yc", "compute", "instance", "start",
+        "--name", args['name'],
+        "--format=json"
+    ]
+    process = subprocess.Popen(vars,
+                    stdout=subprocess.PIPE,
+                    universal_newlines=True)
+    process.wait()
+    data, err = process.communicate()
+    if process.returncode == 0:
+        return data
+    else:
+        print("Error:", err)
+    return "{}"
+
+
 def get_instance_info(args):
 
     # yc compute instance get --name netology86-instance --format=json
-    
+
     vars = [
-        "yc", "compute", "instance", "get", 
-        "--name", args['name'], 
+        "yc", "compute", "instance", "get",
+        "--name", args['name'],
         "--format=json"
     ]
-    process = subprocess.Popen(vars, 
+    process = subprocess.Popen(vars,
                     stdout=subprocess.PIPE,
                     universal_newlines=True)
     process.wait()
@@ -172,6 +214,7 @@ def get_instance_info(args):
 
 def main():
     module_args = dict(
+        status=dict(type='str', required=False, default="running"),
         name=dict(type='str', required=False, default="netology86-instance"),
         network_interface=dict(type='str', required=True),
         zone=dict(type='str', required=False, default="ru-central1-a"),
@@ -181,7 +224,7 @@ def main():
         memory=dict(type='str', required=False, default="4"),
         platform=dict(type='str', required=False, default="standard-v1" ),
         image_family=dict(type='str', required=False, default="centos-7" ),
-        boot_disk_size=dict(type='str', required=False, default="20")
+        boot_disk_size=dict(type='str', required=False, default="20"),
     )
 
     # seed the result dict in the object
@@ -204,21 +247,52 @@ def main():
 
     # Check if instance exists to decide if any action required
     instance_info = json.loads(get_instance_info(module.params))
+    if not 'status' in instance_info:
+        instance_info['status'] = 'absence'
+    # If exists, convert status to lower case for ease
+    else:
+        instance_info['status'] = instance_info['status'].lower
 
     # If instance doesn't have network interface, it's most like doesn't exist
     # because YC doesn't allow you to create instances not connected to a network
     if module.check_mode:
-        if not "network_interfaces" in instance_info:
+        if instance_info['status'].lower() != module.params['status']:
             result['changed'] = True
         module.exit_json(**result)
 
-    # Do nothing if instance exists or create one and return changed status to ansible
-    if "network_interfaces" in instance_info:
-        # print(instance_info['network_interfaces'][0]['primary_v4_address']['one_to_one_nat']['address'])
-        pass
+    # check param status is in running or absence, else raise error
+    if module.params['status'] == "running":
+        # if instance is running - do nothing, everything is ok
+        if instance_info['status'] == "running":
+            pass
+        # check if instance status is stopped, raise and result changed
+        elif instance_info['status'] == "stopped":
+            start_instance(module.params)
+            # result['changed'] = True
+        # check instance exists and status in running, starting, provisioning
+        # if not, create and result changed
+        elif instance_info['status'] in ("running", "starting", "provisioning"):
+            pass
+        # in case instance was absence or deleting during the first check
+        elif instance_info['status'] in ("absence", "deleting"):
+            while instance_info['status'] == 'deleting':
+                if json.loads(get_instance_info(module.params)) == "{}":
+                    time.sleep(5)
+                else:
+                    instance_info['status'] != 'absence'
+            create_instance(module.params)
+        else:
+            create_instance(module.params)
+            result['changed'] = True
+    elif module.params['status'] == "absence":
+        # check instance status is absence or deleting, if not delete and result changed
+        if instance_info['status'] in ("absence", "deleting"):
+            pass
+        else:
+            delete_instance(module.params)
+            result['changed'] = True
     else:
-        create_instance(module.params)
-        result['changed'] = True
+        module.fail_json(msg='Supported statuses are: "running" and "absence"', **result)
 
     # Just in case to test what it looks like when module fails
     if module.params['name'] == 'fail me':
