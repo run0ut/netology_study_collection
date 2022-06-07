@@ -70,6 +70,7 @@ class InventoryModule(BaseInventoryPlugin):
                         instance['name'] = instance['id']
                     self.inventory.add_host(instance["name"], group="yacloud")
                     self.inventory.set_variable(instance["name"], 'ansible_host', instance['ipv4'])
+                    self.inventory.set_variable(instance["name"], 'ansible_user', 'yc-user')
             except:
                 # Don't add instance into inventory, if it doesn't have a publick IP address
                 pass
