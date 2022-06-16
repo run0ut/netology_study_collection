@@ -1,6 +1,7 @@
 ---
 # defaults file for netology86-yc-role
-name: "netology86-instance"
+name: "netology-homeworks"
+homework: "netology-homeworks"
 network_interface: "net-ru-central1-a"
 zone: "ru-central1-a"
 ssh_key: "~/.ssh/id_rsa.pub"
@@ -8,5 +9,5 @@ cores: "2"
 core_fraction: "100"
 memory: "4"
 platform: "standard-v1" 
-image_family: "centos-7" 
+image_family: "centos-stream-8" 
 boot_disk_size: "20"

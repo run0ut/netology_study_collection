@@ -1,6 +1,6 @@
-namespace: netology86
-name: yandex_cloud_elk
-version: 2.0.1
+namespace: netology
+name: study_collection
+version: 3.0.0
 readme: README.md
 authors:
 - Sergey shadurskiy <s.shadurskiy@gmail.com>
@@ -10,7 +10,7 @@ license:
 license_file: ''
 tags: []
 dependencies: {}
-repository: https://github.com/run0ut/my_own_collection
+repository: https://github.com/run0ut/netology_study_collection
 documentation: None
 homepage: None
 issues: None
