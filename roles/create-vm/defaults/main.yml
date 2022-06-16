@@ -1,7 +1,6 @@
 ---
 # defaults file for netology86-yc-role
-name: "netology-homeworks"
-homework: "netology-homeworks"
+vm_name: "netology-homeworks"
 network_interface: "net-ru-central1-a"
 zone: "ru-central1-a"
 ssh_key: "~/.ssh/id_rsa.pub"

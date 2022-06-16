@@ -1,10 +1,10 @@
-- name: "Create {{ homework }}-vm1"
+- name: "Create {{ vm_name }}"
   yc_create_instance:
-    network_interface: "net-ru-central1-a"
-    name: "{{ homework }}-vm1"
-    image_family: "ubuntu-2004-lts"
-    cores: 2
-    memory: 4
+    network_interface: "{{ network_interface }}"
+    name: "{{ vm_name }}"
+    image_family: "{{ image_family }}"
+    cores: "{{ cores }}"
+    memory: "{{ memory }}"
     status: "running"
 
 - name: Refresh Inventory
